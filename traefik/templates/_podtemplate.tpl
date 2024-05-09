@@ -151,7 +151,7 @@
             mountPath: {{ .mountPath }}
             readOnly: true
           {{- end }}
-          {{- if gt (len .Values.experimental.plugins) 0 }}
+          {{- if or (gt (len .Values.experimental.plugins) 0) (gt (len .Values.experimental.localPlugins) 0) }}
           - name: plugins
             mountPath: "/plugins-storage"
           {{- end }}
@@ -443,6 +443,12 @@
           - "--experimental.plugins.{{ $pluginName }}.moduleName={{ $plugin.moduleName }}"
           - "--experimental.plugins.{{ $pluginName }}.version={{ $plugin.version }}"
           {{- end }}
+          {{- range $localPluginName, $localPlugin := .Values.experimental.localPlugins }}
+          {{- if or (ne (typeOf $localPlugin) "map[string]interface {}") (not (hasKey $localPlugin "moduleName")) }}
+            {{- fail  (printf "ERROR: localPlugin %s is missing moduleName keys !" $localPluginName) }}
+          {{- end }}
+          - "--experimental.localPlugins.{{ $localPluginName }}.moduleName={{ $localPlugin.moduleName }}"
+          {{- end}}
           {{- if .Values.providers.kubernetesCRD.enabled }}
           - "--providers.kubernetescrd"
           {{- if .Values.providers.kubernetesCRD.labelSelector }}
@@ -771,7 +777,7 @@
         {{- if .Values.deployment.additionalVolumes }}
           {{- toYaml .Values.deployment.additionalVolumes | nindent 8 }}
         {{- end }}
-        {{- if gt (len .Values.experimental.plugins) 0 }}
+        {{- if or (gt (len .Values.experimental.plugins) 0) (gt (len .Values.experimental.localPlugins) 0) }}
         - name: plugins
           emptyDir: {}
         {{- end }}

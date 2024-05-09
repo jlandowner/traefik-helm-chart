@@ -20,6 +20,10 @@
 {{- if ne (typeOf .Values.experimental.plugins) "map[string]interface {}" }}
   {{- fail (printf "ERROR: .Values.experimental.plugins should be a map (%s provided) !" (typeOf .Values.experimental.plugins)) }}
 {{- end }}
+
+{{- if ne (typeOf .Values.experimental.localPlugins) "map[string]interface {}" }}
+  {{- fail (printf "ERROR: .Values.experimental.localPlugins should be a map (%s provided) !" (typeOf .Values.experimental.localPlugins)) }}
+{{- end }}
 ---
 apiVersion: apps/v1
 kind: Deployment

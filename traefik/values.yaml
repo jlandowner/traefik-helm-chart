@@ -138,6 +138,10 @@ experimental:
   # demo:
   #   moduleName: github.com/traefik/plugindemo
   #   version: v0.2.1
+  # -- Enable traefik experimental localPlugins
+  localPlugins: {}
+  # demo:
+  #   moduleName: github.com/traefik/plugindemo
   kubernetesGateway:
     # -- Enable traefik experimental GatewayClass CRD
     enabled: false

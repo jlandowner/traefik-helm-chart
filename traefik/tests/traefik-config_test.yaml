@@ -220,6 +220,36 @@ tests:
       - failedTemplate:
           errorMessage: "ERROR: .Values.experimental.plugins should be a map (bool provided) !"
 
+  - it: should have a local plugin storage and args if the experimental feature is enabled
+    set:
+      experimental:
+        localPlugins:
+          demo:
+            moduleName: github.com/traefik/plugindemo
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[2]
+          value:
+            name: plugins
+            emptyDir: {}
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: plugins
+            mountPath: "/plugins-storage"
+      - contains:
+          path: spec.template.spec.containers[0].args
+          content: "--experimental.localPlugins.demo.moduleName=github.com/traefik/plugindemo"
+
+  - it: should fail gracefully on missing local plugins information
+    set:
+      experimental:
+        localPlugins:
+          demo:
+    asserts:
+      - failedTemplate:
+          errorMessage: "ERROR: localPlugin demo is missing moduleName keys !"
+
   - it: should have tls configuration args when specified in values.yaml for port
     set:
       ports:
